@@ -1,0 +1,35 @@
+History:-
+
+> It was used to install OSes on as amny as thousands of desktops remotely.
+> It's main reason was for imaging
+> PXE = Imaging
+
+Components:-
+
+> 1. NIC--->Firmware chip--->PXE code & Wake-On-LAN signals(It is not ethernet,
+> special signal. Normally NICs produce ethernet frames but you can tell the
+> NIC to these speical signals on the network and then when these signals are
+> recognized by the Network card then the computer wakes up.Network card is
+> always 'ON')
+
+> 2. Server--->PXE services
+>> These two are important criterions for it to work.
+
+How to enable PXE on NEtwork Card?
+>>Enable both PXE and Wake-On-LAN in the PC's BIOS.
+>> All retail providers already have these two
+
+>PXE doesnot support wireless NICs, every device needs RJ45!!
+
+Today:-
+> NIC on motherboard(chip)--->PXE code
+
+
+>> PXE NIC:-
+> 1. pull IP- PXE IP from DHCP
+> 2. BOOT Menu- is pulled down into RAM
+> 3. WINPE load scripts
+> 4. IMaging launches & image is downloaded
+
+PXE on VM works ??
+> YES,because if the laptop on which they are made has PXE enabled.
