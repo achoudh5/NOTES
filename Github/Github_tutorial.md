@@ -1,11 +1,14 @@
 
 Anshul Choudhary [7:07 PM]
+
 I tried to mitigate that issue of rebasing by git fetch and git pull. On my local it always says it's up to date but on my remote I see it's some commits behind and some ahead
 
 Katrina Brock [7:08 PM]
+
 up to date with what though?
 
 Anshul Choudhary [7:08 PM]
+
 origin/master
 ohh it should be remote right ?
 
@@ -27,8 +30,14 @@ At this point, it will say `This branch is 5 commits ahead of pygash:master.` Th
 
 # Stepwise Explanation
 
+### 1. Adding the Remote
+
+#### You should always have upstream and your fork in the remote
+#### Remote(upstream) should be always in sync with master branch of your fork (good practise), keep this branch clean and commit everything after you checkout from master and made a new branch
+
 Katrina Brock [7:16 PM]
 ok, first do this:
+
 ```(devenv) ~/pygash-org/nuage-topos (INF-3572|✔)
 ❯❯❯ git checkout master 
 Switched to branch 'master'
@@ -42,23 +51,31 @@ me      git@github.mv.usa.alcatel.com:kbrock/nuage-topos.git (push)
 origin  git@github.mv.usa.alcatel.com:pygash/nuage-topos.git (fetch)
 origin  git@github.mv.usa.alcatel.com:pygash/nuage-topos.git (push)
 (devenv) ~/pygash-org/nuage-topos (master|✔)
-❯❯❯ git status```
+❯❯❯ git status
 On branch master
 Your branch is up-to-date with 'origin/master'.
 nothing to commit, working tree clean
+```
+
 so from above...you can see in my repo `origin` is the name I have for for `pygash/nauge-topos` and `me` is the name I have for my fork `kbrock/nuage-topos`
 
-[root@mvdclinuxvm26 nuage-topos]# git remote -v
+
+[root@mvdclinuxvm26 nuage-topos]# ```git remote -v```
+
 origin git@github.mv.usa.alcatel.com:anschoud/nuage-topos.git (fetch)
 
 Katrina Brock [7:17 PM]
-^ok, here is your first problem, * you don't even have the upstream as one of your remotes *
+
+^ok, here is your first problem, **you don't even have the upstream as one of your remotes**
 you only have your fork, so you have no possible way to pull in new changes that other people have added !
 
 Katrina Brock [7:19 PM]
+
 then add your fork as a second remote
 I'll add your fork too...
-```(devenv) ~/pygash-org/nuage-topos (master|✔)
+
+```
+(devenv) ~/pygash-org/nuage-topos (master|✔)
  ❯❯❯ git remote add anschoud git@github.mv.usa.alcatel.com:anschoud/nuage-topos.git
 (devenv) ~/pygash-org/nuage-topos (master|✔)
  ❯❯❯ git remote -v
@@ -69,22 +86,22 @@ kid     git@github.mv.usa.alcatel.com:corentih/nuage-topos.git (push)
 me      git@github.mv.usa.alcatel.com:kbrock/nuage-topos.git (fetch)
 me      git@github.mv.usa.alcatel.com:kbrock/nuage-topos.git (push)
 origin  git@github.mv.usa.alcatel.com:pygash/nuage-topos.git (fetch)
-origin  git@github.mv.usa.alcatel.com:pygash/nuage-topos.git (push)```
-* ^ this is how you add another remote*
+origin  git@github.mv.usa.alcatel.com:pygash/nuage-topos.git (push)
+```
+
+**^ this is how you add another remote**
+
 see, your fork is in the list now
 I've named it `anschoud`
 you can name it whatever you like locally..some people call it `fork`
 
-
-
 ok, now...you probably want your `master` branch to track mainline, not your fork
 so run `git branch --set-upstream-to=mainline/master`
 then run `git status` again and show me the output
-oh wait, you actually have 4 commits in your master branch...do you want to save those? https://github.mv.usa.alcatel.com/anschoud/nuage-topos/tree/master
 
 Anshul Choudhary [7:25 PM]
-yeah
-also, I got his error
+
+got this error
 Untitled 
 git branch --set-upstream-to mainline/master
 error: the requested upstream branch 'mainline/master' does not exist
@@ -99,49 +116,54 @@ hint: If you are planning on basing your work on an upstream
 hint: branch that already exists at the remote, you may need to
 
 Katrina Brock [7:26 PM]
+
 ok, before you do that, let's save the changes you have in master in another branch
 
 Anshul Choudhary [7:26 PM]
+
 okay
 
 Katrina Brock [7:26 PM]
+
 what do you want to name it?
 (doesn't much matter)
 
 Anshul Choudhary [7:27 PM]
+
 just `changes`
 
 Katrina Brock [7:27 PM]
+
 ok, so do `git branch changes` < - this creates a new branch (edited)
 then `git checkout changes` < - this makes the new branch your working branch (edited)
 
-Anshul Choudhary [7:28 PM]
-done
-
 Katrina Brock [7:28 PM]
+
 ok, so now you have the branch locally, you probably want to push it to your remote in case your workstation goes down or something
 so do `git push origin`
 
-Anshul Choudhary [7:29 PM]
-done
-
 Katrina Brock [7:30 PM]
+
 great, that worked: https://github.mv.usa.alcatel.com/anschoud/nuage-topos/tree/changes
 we can come back to this branch later, but let's move forward with cleaning up and fixing your existing PR
 so now...go back to your local `master` branch
 
 Anshul Choudhary [7:30 PM]
+
 git checkout master
 
 Katrina Brock [7:31 PM]
+
 yes!
 now...the thing is when you do `git remote add` you tell git what you want to call a remote repo
 but it doesn't actually contact that remote repo until you tell it to
 
 Anshul Choudhary [7:31 PM]
+
 yeah I named it mainline right
 
 Katrina Brock [7:31 PM]
+
 so that's probably why you got the error above
 it doesn't know that that `mainline` has any such branch as master
 well...it doesn't known anything about `mainline` at all except where to find it
@@ -149,33 +171,32 @@ so to solve this run `git fetch mainline`
 that will pull all the info from your remote, but it doesn't change any of your local branches
 
 Anshul Choudhary [7:32 PM]
+
 done, it did
 
 Katrina Brock [7:33 PM]
+
 now try `git branch --set-upstream-to=mainline/master`
 see if that solves it
 
 Anshul Choudhary [7:33 PM]
+
 Untitled 
-git push --set-upstream origin changes
+`git push --set-upstream origin changes`
 Branch changes set up to track remote branch changes from origin.
 Everything up-to-date
 
 Katrina Brock [7:34 PM]
+
 ok, so your `changes` branch is tracking anschoud/nuage-topos:changes. that's ok
 
 Anshul Choudhary [7:39 PM]
+
 so, now git fetch and pull ? (edited)
 
-Katrina Brock [7:50 PM]
-sorry, someone walked up to talk to me
-back now
-
-Anshul Choudhary [7:50 PM]
-no probs
-I am in lecture anyways :stuck_out_tongue:
 
 Katrina Brock [7:51 PM]
+
 so your `changes` branch is tracking anschoud/nuage-topos:changes. But! what you really want is your `master` branch to be tracking pygash/nutopos:master
 so that you have latest changes locally
 so do `git checkout master; git branch --set-upstream-to=mainline/master`
@@ -183,6 +204,7 @@ then `git status`
 if it works, you should then `git status` should tell you that you're 4 commits ahead 38 commits behind mainline/master
 
 Anshul Choudhary [7:52 PM]
+
 Untitled 
 git rebase origin/nuageinfra_PR
 Current branch nuageinfra_PR is up to date.
@@ -191,21 +213,29 @@ Switched to branch 'master'
 Your branch is up-to-date with 'origin/master'.
 
 Katrina Brock [7:53 PM]
-```Your branch and 'mainline/master' have diverged,
 
-and have 4 and 38 different commits each, respectively.```
-good!
-```Untracked files:
+```
+Your branch and 'mainline/master' have diverged,
+
+and have 4 and 38 different commits each, respectively.good!
+
+```
+
+```
+Untracked files:
 
   (use "git add <file>..." to include in what will be committed)
 
 
 
-        nuage-topos/```
+        nuage-topos/
+ ```
+        
 it seems you cloned the repo inside itself
 so, maybe rm -rf that?
 
 Anshul Choudhary [7:54 PM]
+
 Untitled 
 git status
 On branch master
@@ -213,51 +243,55 @@ Your branch and 'mainline/master' have diverged,
 and have 4 and 38 different commits each, respectively.
  (use "git pull" to merge the remote branch into yours)
 
-Katrina Brock [7:55 PM]
-cool
-is everything making sense?
-
-Anshul Choudhary [7:56 PM]
-yeah
-
-Katrina Brock [7:56 PM]
-I'm telling you what commands to type, but I hope you're understanding too
-if you don't understand what you're doing, please ask questions
 
 Anshul Choudhary [7:57 PM]
-but I was thinking in the last part why do I need to keep my mster branch in line
-I mean I am raising my PR from the nuageinfra_PR
-so why not just go there and fetch
-unless it fetches from the mainline which I have as my remote
+
+but I was thinking in the last part why do I need to keep my mster branch in line I mean I am raising my PR from the nuageinfra_PR
+so why not just go there and fetch unless it fetches from the mainline which I have as my remote
 
 Katrina Brock [7:58 PM]
+
 so here's what has happened...
 before you touched this repo...there was just a bunch of commits
 pygash/nutopos (remote) A - B - C - D
 then you forked
 so then it's like
-```pygash/nuage-topos:master (remote) A - B - C - D
-anschoud/nuage-topos:master (remote) A - B -C D```
+
+```
+pygash/nuage-topos:master (remote) A - B - C - D
+anschoud/nuage-topos:master (remote) A - B -C D
 then you clone, so you have
-```pygash/nuage-topos:master (remote) A - B - C - D
-anschoud/nuage-topos:master (remote) A - B - C - D
-local:master A - B - C - D```
-then you branched so you have
-```pygash/nuage-topos:master (remote) A - B - C - D
+```
+
+```
+pygash/nuage-topos:master (remote) A - B - C - D
 anschoud/nuage-topos:master (remote) A - B - C - D
 local:master A - B - C - D
-local:PR A - B - C - D```
+then you branched so you have
+```
+
+```
+pygash/nuage-topos:master (remote) A - B - C - D
+anschoud/nuage-topos:master (remote) A - B - C - D
+local:master A - B - C - D
+local:PR A - B - C - D
 (edited)
 then add a commit, then push
-```pygash/nuage-topos:master (remote) A - B - C - D
+```
+
+```
+pygash/nuage-topos:master (remote) A - B - C - D
 anschoud/nuage-topos:master (remote) A - B - C - D
 local:master A - B - C - D
 local:PR A - B - C - D - YOURCHANGES
-anschoud/nuage-topos:PR (remote) A - B - C - D - YOURCHANGES```
+anschoud/nuage-topos:PR (remote) A - B - C - D - YOURCHANGES
 (edited)
 now...that's all fine..but the problem is..in the meantime, people have added to mainline
 so we have
-```pygash/nuage-topos:master (remote) A - B - C - D - E - F - G
+```
+
+```
+pygash/nuage-topos:master (remote) A - B - C - D - E - F - G
 
 anschoud/nuage-topos:master (remote) A - B - C - D
 
@@ -265,80 +299,84 @@ local:master A - B - C - D
 
 local:PR A - B - C - D - YOURCHANGES
 
-anschoud/nuage-topos:PR (remote) A - B - C - D - YOURCHANGES```
+anschoud/nuage-topos:PR (remote) A - B - C - D - YOURCHANGES
+
+```
 so we want to know if your changes have any problems before we merge
-but the problem is.... E - F - G are now required for the code to work
-so when we test your branch, even if you changes are harmless, it's likely to fail
-because it's missing E - F - G
-so as it is, there's no way to know if your changes are harmless
+but the problem is.... **E - F - G are now required for the code to work so when we test your branch, even if you changes are harmless, it's likely to fail because it's missing E - F - G so as it is, there's no way to know if your changes are harmless**
 so the goal is to get to
-```anschoud/nuage-topos:PR (remote) A - B - C - D - E - F - G - YOURCHANGES```
+
+```
+anschoud/nuage-topos:PR (remote) A - B - C - D - E - F - G - YOURCHANGES
+```
+
 to get there, you first get your master to match the mainline master
-```local:master A - B - C - D - E - F - G```
+
+```
+local:master A - B - C - D - E - F - G
+```
+
 then we rebase against it so you get
-```local:PR A - B - C - D - E - F -G  - YOURCHANGES```
-now, techically you're right, you can just rebase mainline directly
-to do that, you checkout your PR and just do `git rebase mainline master`
-I think it's easier to keep everything clean in your head if you have a local branch that is always up to date with the mainline master
-it just helps stay organized
-hopefully this isn't too basic, I just want to make sure we're 100% on the same page
+
+```
+local:PR A - B - C - D - E - F -G  - YOURCHANGES
+```
+
+now, techically you're right, you can just rebase mainline directly to do that, you checkout your PR and just do `git rebase mainline master` I think it's easier to keep everything clean in your head if you have a local branch that is always up to date with the mainline master it just helps stay organized hopefully this isn't too basic, I just want to make sure we're 100% on the same page
 
 Anshul Choudhary [8:14 PM]
-so, master in my local is just a dummy I am keeping to which I match my other branch if I am pushing changes through them or if it's just the master then I will just keep it updated by git fetch && pull remote master...
-and then push my changes
-so, if I checkout to my brach say changes and do git fetch and pull remote mainline....it will update my changes branch but I still have to update my master to the mainline (just to eep it clean incase I raise a change through it in future)
+
+So, master in my local is just a dummy I am keeping to which I match my other branch if I am pushing changes through them or if it's just the master then I will just keep it updated by git fetch && pull remote master...and then push my changes. So, if I checkout to my brach say changes and do git fetch and pull remote mainline....it will update my changes branch but I still have to update my master to the mainline (just to eep it clean incase I raise a change through it in future)
 
 Katrina Brock [8:16 PM]
-local master should match mainline remote master
-that's just a good practice, it's not the absolutely only way to do it
-then you branch off of it and make changes on other branches
-the `changes` branch or the `PR` branch or what have you
-but those don't get automatically updated from master
-you have to rebase for that
+
+local master should match mainline remote master that's just a good practice, it's not the absolutely only way to do it
+then you branch off of it and make changes on other branches the `changes` branch or the `PR` branch or what have you
+but those don't get automatically updated from master you have to rebase for that
 
 Anshul Choudhary [8:19 PM]
-and rebase would direct me to that mainlineremote branch . From there on I will still have to do fetch and pull correct ?
+
+And rebase would direct me to that mainline remote branch . From there on I will still have to do fetch and pull correct ?
 
 Katrina Brock [8:21 PM]
+
 mmm..not really
 ok, so first for all `pull` = `fetch` + `merge`
 so "fetch and pull" doesn't make much sense
-what `fetch` does is take all the changes in your remote (whichever one you're fetching either origin or mailnine) and stores them locally
-it doesn't change your local branches at all
-for understanding merge and rebase, you should just read this: https://www.atlassian.com/git/tutorials/merging-vs-rebasing
-Atlassian
-Merging vs. Rebasing | Atlassian Git Tutorial
+what `fetch` does is take all the changes in your remote (whichever one you're fetching either origin or mailnine) and stores them locally it doesn't change your local branches at all. For understanding merge and rebase, you should just read this: https://www.atlassian.com/git/tutorials/merging-vs-rebasing 
+Atlassian Merging vs. Rebasing | Atlassian Git Tutorial
 Compare git rebase with the related git merge command and identify all of the potential opportunities to incorporate rebasing into the typical Git workflow
 
-Anshul Choudhary [8:24 PM]
-okay
-
-Katrina Brock [8:25 PM]
-it will take too long for me to explain without a shared whitboard, the diagrams should help
-
-Anshul Choudhary [8:25 PM]
-cool
 
 Katrina Brock [8:26 PM]
+
 for this PR, it's not such a big deal..but like..if want to do anything with devops here or at most any software company these are some concepts that really good to know, so worthwhile to spend the time to learn them now.
 
 Anshul Choudhary [8:26 PM]
+
 yeah,  I will read that
 I did git pull and push
 
 Katrina Brock [8:27 PM]
+
 yeah, you have to understand what those are doing though
-like I said `pull` is `fetch` + `merge`
-so to really understand `pull` you have to understand `merge`
+like I said `pull` is `fetch` + `merge` , so to really understand `pull` you have to understand `merge`
+
+================================================================================================================================================================================================================================================================================
+
 
 Anshul Choudhary [8:28 PM]
+
 pull was for fetching the changes others have made
 push is whatever I did
 
 Katrina Brock [8:28 PM]
+
 yes, but exactly what will happen to those other commits?
 say the situation is this
-```pygash/nuage-topos:master (remote) A - B - C - D - E - F - G
+
+```
+pygash/nuage-topos:master (remote) A - B - C - D - E - F - G
 local:master A - B - C - D - X - Y```
 and you `git pull`
 what will be the result in `local:master` ?
